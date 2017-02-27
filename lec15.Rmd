@@ -1,0 +1,177 @@
+---
+title: "STA286 Lecture 15"
+author: "Neil Montgomery"
+date: "Last edited: `r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output: 
+  beamer_presentation:
+    keep_tex: TRUE
+    incremental: TRUE
+    df_print: tibble
+    fig_caption: FALSE
+classoption: aspectratio=169
+header-includes:
+- \renewcommand{\le}{\leqslant}
+- \renewcommand{\ge}{\geqslant}
+- \renewcommand\P[1]{P{\left(#1\right)}}
+- \newcommand\F[1]{F_{\tiny{#1}}}
+- \newcommand\f[1]{f_{\tiny{#1}}}
+- \newcommand\p[1]{p_{\tiny{#1}}}
+- \newcommand\M[1]{M_{\tiny{#1}}}
+- \newcommand\V[1]{\text{Var}\!\left(#1\right)}
+- \newcommand\E[1]{E\!\left(#1\right)}
+- \newcommand\N[1]{N_{\tiny{#1}}}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+options(tibble.width=70)
+```
+
+## "binomial process"
+
+Let's put a time scale on a Bernoulli process. One trial will now happen in every unit of time $\Delta$ (called a "frame"), and successes happen now with a "rate" $\lambda$ per unit of time.
+
+\pause The result of this re-jigging is a sequence $X_1, X_2, X_3, \ldots$ of random variables that are independent with Bernoulli$(\lambda\Delta)$ distribution.
+
+\pause Consider the cumulative sums $X(t)$ of this Bernoulli process:
+\begin{align*}
+X(1) &= X_1\\
+X(2) &= X_1 + X_2\\
+\vdots &\qquad \vdots\\
+X(n) &= \sum_{i=1}^n X_i\\
+\vdots &\qquad \vdots\\
+\end{align*}
+
+## "binomial process"
+
+$X(t)$ is non-negative, integer valued, non-decreasing sequence of random variables. Such a sequence is called a \textit{counting process}.
+
+\pause This particular counting process is called a \textit{binomial process}. It counts the number of 1s in the first $n$ frames---equivalent to the number of 1s from time $t=0$ to time $t=n\Delta$.
+
+(Assume the Bernoulli trial occurs at the start of the frame.)
+
+\pause $X(t)$ has these properties:
+
+* $X(0) = 0$
+* $X(t) \sim \text{Binomial}\left(n = \frac{t}{\Delta}, p = \lambda\Delta \right)$.
+* $X(t)$ increments by 0 or 1 per frame.
+* Number of frames between increments is Geometric$(p)$.
+* Given times $s_1 < t_1 < s_2 < t_2$, the differences $X(t_1) - X(s_1)$ and $X(t_2) - X(s_2)$ are \textit{independent} random variables.
+* $\E{X(t)} = np = \frac{t}{\Delta}\lambda\Delta = \lambda t$
+
+## pass to the limit
+
+Fix a time $t$. Keep $\E{X(t)} = np = \lambda t$ constant, so that $p = \lambda t / n$.
+
+The goal is to find the limit of $P(X(t) = k)$ as $n \to \infty$ for any $k\ge 0$.
+
+For any fixed $n$, $X(t) \sim \text{Binomial}\left(n, \frac{\lambda t}{n}\right)$
+
+## pass to the limit
+
+\begin{align*}
+\onslide<1->{\lim\limits_{n\to\infty} P(X(t) = k) &= \lim\limits_{n\to\infty} {n \choose k} \left( \frac{\lambda t}{n}\right)^k \left(1 - \frac{\lambda t}{n}\right)^{n-k}\\}
+\onslide<2->{&= \lim\limits_{n\to\infty} \frac{n!}{k!(n-k)!} \left( \frac{\lambda t}{n}\right)^k \left(1 - \frac{\lambda t}{n}\right)^{n-k}\\}
+\onslide<3->{&= \frac{(\lambda t)^k}{k!} \lim\limits_{n\to\infty} \frac{n!}{(n-k)!} \frac{1}{n^k} \left(1 - \frac{\lambda t}{n}\right)^{n}\left(1 - \frac{\lambda t}{n}\right)^{-k}\\}
+\onslide<4->{&= \frac{(\lambda t)^k}{k!} \lim\limits_{n\to\infty} \underbrace{\frac{n\cdot(n-1)\cdot(n-2)\cdots(n-k+1)}{n\cdot n \cdot n \cdots n}}_{k \text{terms}} \left(1 - \frac{\lambda t}{n}\right)^{n}\left(1 - \frac{\lambda t}{n}\right)^{-k}\\} 
+\onslide<5->{&= \frac{(\lambda t)^k}{k!}e^{-\lambda t}}
+\end{align*}
+
+## Poisson process/distribution
+
+Nothing to do with fish. Named after some French guy.
+
+A Poisson process $N(t)$ is a counting process which counts the number of "events" that happen inside the time interval $[0,t]$, subject to the following:
+
+* $N(0) = 0$
+* Given times $s_1 < t_1 < s_2 < t_2$, the differences $N(t_1) - N(s_1)$ and $N(t_2) - N(s_2)$ are \textit{independent} random variables.
+* $P(N(t) - N(s) = k) = \frac{(\lambda (t-s))^k}{k!}e^{-\lambda (t-s)}$ for $0 \ge s < t$
+
+\pause The Poisson process is a common model for events that happen "completely randomly" in time (to be further discussed)
+
+
+## Poisson distribution
+
+There is also the closely related Poisson distribution, in which the $t$ is not explicitly used. We say $X \sim \text{Poisson}(\lambda)$ if it has pmf:
+$$P(X=k) = \frac{\lambda ^k}{k!}e^{-\lambda} \quad \text{for}\ k \in\{0,1,2,\ldots\}$$
+```{r, fig.width=4, fig.height=2.5, fig.align='center'}
+plot(0:10, dpois(0:10, lambda=2.5), pch=20, xlab="x", ylab="P(X=x)", main="Poisson pmf with lambda=2.5")
+```
+
+
+## Poisson examples
+
+Customers enter a store at a rate of 1 per minute. Find the probabilities that:
+
+1. More than one will enter in the first minute.
+2. More than two will enter in the first two minutes.
+3. More than one will enter in each of the first two minutes.
+
+\pause Why or why not might a Poisson process model be suitable here?
+
+## other Poisson distribution properties
+
+Suppose $X \sim \text{Poisson}(\lambda)$. Then (using $s$ as the meaningless "dummy" variable):
+
+\pause 
+
+$$\M{X}(s) = E(e^{sX}) = \sum_{k=0}^\infty e^{sk}\frac{\lambda^ke^{-\lambda}}{k!}=e^{-\lambda}\sum_{k=0}^\infty\frac{(e^s\lambda)^k}{k!} \onslide<3->{= e^{-\lambda}e^{e^s\lambda} = e^{\lambda(e^s-1)}}$$
+
+\pause\pause Then it's easy to show $E(X)=\lambda$ and $\V{X}=\lambda$.
+
+## Poisson - when did the event happen?
+
+In a Poisson process we might have observed that $N(t) = 1$. (We will condition on this fact throughout.)
+
+\pause When inside the interval $[0,t]$ did that single event occur?
+
+\pause The time when the event happened is a continuous random variable, which we can call $X$. What is it's distribution? 
+
+\pause We can derive its cumulative disribution function from first principles. We know $P(X \le x|N(t)=1) = 0$ for $x \le 0$ and $P(X \le x|N(t)=1) = 1$ for $x > t$. 
+
+## cdf of "the time when that one thing happened" - cont'
+
+Between 0 and $t$ we have:
+
+\begin{align*}
+P(X \le x | N(t) = 1) &= 1 - P(X > x | N(t) = 1)\\
+\onslide<2->{&= 1 - P(N(x) = 0 | N(t) = 1 )\\}
+\onslide<3->{&= 1 - \frac{P(N(x) = 0, N(t) = 1)}{P(N(t)=1)}\\}
+\onslide<4->{&= 1 - \frac{P(N(x) = 0, N(t) - N(x) = 1)}{P(N(t)=1)}\\}
+\onslide<5->{&= 1 - \frac{P(N(x) = 0)P(N(t) - N(x) = 1)}{P(N(t)=1)}\\}
+\onslide<6->{&= 1 - \frac{e^{-\lambda x} \lambda(t-x)e^{-\lambda(t-x)}}{\lambda t e^{-\lambda t}}\\}
+\onslide<7->{&= 1 - \frac{t-x}{t} = \frac{x}{t}}
+\end{align*}
+
+## density of "the time when that one thing happened"
+
+Putting it all together, the cdf of the time $X$ when the event occurred given $N(t)=1$ is:
+
+$$F_X(x) = \begin{cases}
+0 &: x \le 0\\
+\frac{x}{t} &: 0 < x \le t\\
+1 &: x > t
+\end{cases}$$
+
+\pause So the density is:
+$$\f{X}(x) = \frac{d}{dx} F_X(x) = \begin{cases}
+\frac{1}{t} &: 0 < x \le t\\
+0 &: \text{ otherwise}
+\end{cases}$$
+
+\pause The density is flat between 0 and $t$. We call this a "uniform distribution" between 0 and $t$. 
+
+## the uniform distributions
+
+The random variable $X$, the result of "picking a real number at random between $a$ and $b$", is modeled using a flat density:
+$$f(x) = \begin{cases}
+\frac{1}{b-a} &: a < x < b\\
+0 &: \text{ otherwise}
+\end{cases}$$
+
+\pause Easy to show $E(X) = (b-a)/2$ and $\V{X}=(b-a)^2/12$.
+
+\pause mgf is easy to determine, but not really useful for anything.
+
+
+
