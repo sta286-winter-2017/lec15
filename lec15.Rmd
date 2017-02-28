@@ -85,7 +85,7 @@ A Poisson process $N(t)$ is a counting process which counts the number of "event
 
 * $N(0) = 0$
 * Given times $s_1 < t_1 < s_2 < t_2$, the differences $N(t_1) - N(s_1)$ and $N(t_2) - N(s_2)$ are \textit{independent} random variables.
-* $P(N(t) - N(s) = k) = \frac{(\lambda (t-s))^k}{k!}e^{-\lambda (t-s)}$ for $0 \ge s < t$
+* $P(N(t) - N(s) = k) = \frac{(\lambda (t-s))^k}{k!}e^{-\lambda (t-s)}$ for $0 \le s < t$
 
 \pause The Poisson process is a common model for events that happen "completely randomly" in time (to be further discussed)
 
